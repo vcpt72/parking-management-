@@ -1,0 +1,82 @@
+﻿@model Parking_projekt.Models.ParkingLot
+
+@{
+    ViewData["Title"] = "Detail parkoviště";
+}
+
+<div class="container mt-4">
+    <h2>@Model.Name</h2>
+    <p>Souřadnice: (@Model.Latitude, @Model.Longitude)</p>
+
+    <hr />
+
+    @if (ViewBag.ParkingsLastMonth != null)
+    {
+        <p>Za poslední měsíc bylo ukončeno parkování: <strong>@ViewBag.ParkingsLastMonth</strong></p>
+    }
+    else
+    {
+        <p>Za poslední měsíc bylo ukončeno parkování: <strong>0</strong></p>
+    }
+    
+    
+    <a href="@Url.Action("AddParkingSpot", "Parking", new { parkingLotId = Model.Id })" class="btn btn-primary mb-3">
+        Přidat parkovací místo
+    </a>
+
+    <h4>Parkovací místa</h4>
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Číslo</th>
+                <th>Status</th>
+                <th>Odstranit</th>
+                <th>Stav</th>
+                <th>Historie</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var spot in Model.ParkingSpots)
+            {
+                <tr>
+                    <td>@spot.LocalId</td> 
+                    <td>@spot.Status</td>
+                    <td>
+
+                        <form method="post" asp-controller="Parking" asp-action="RemoveParkingSpot" onsubmit="return confirm('Opravdu chcete smazat toto parkovací místo?');">
+                            <input type="hidden" name="spotId" value="@spot.Id" />
+                            <input type="hidden" name="parkingLotId" value="@Model.Id" />
+                            <button type="submit" class="btn btn-danger btn-sm">Odstranit</button>
+                        </form>
+
+                        
+                    </td>
+                    <td>
+                        <form method="post" asp-controller="Parking" asp-action="SetSpotToMaintenance"
+                              onsubmit="return confirm('Opravdu chcete změnit stav tohoto parkovacího místa na údržbu?');"
+                              class="d-inline">
+                            <input type="hidden" name="spotId" value="@spot.Id" />
+                            <input type="hidden" name="parkingLotId" value="@Model.Id" />
+                            <button type="submit" class="btn btn-warning btn-sm">Nastavit stav údržby</button>
+                        </form>
+
+                        <form method="post" asp-controller="Parking" asp-action="SetSpotToAvailable"
+                              onsubmit="return confirm('Opravdu chcete změnit stav tohoto parkovacího místa na dostupný?');"
+                              class="d-inline">
+                            <input type="hidden" name="spotId" value="@spot.Id" />
+                            <input type="hidden" name="parkingLotId" value="@Model.Id" />
+                            <button type="submit" class="btn btn-success btn-sm">Nastavit dostupný stav</button>
+                        </form>
+                    </td>
+
+                    <td>
+                        <form method="get" asp-controller="Parking" asp-action="SpotHistory">
+                            <input type="hidden" name="spotId" value="@spot.Id" />
+                            <button type="submit" class="btn btn-info btn-sm">Historie</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

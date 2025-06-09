@@ -1,0 +1,28 @@
+﻿@model List<Parking_projekt.Models.ParkingSpotHistory>
+
+@{
+    ViewData["Title"] = "Historie změn stavu";
+}
+
+<div class="container mt-4">
+    <h2>Historie změn stavu parkovacího místa</h2>
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Datum změny</th>
+                <th>Původní stav</th>
+                <th>Nový stav</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var entry in Model)
+            {
+                <tr>
+                    <td>@entry.ChangedAt.ToString("g")</td>
+                    <td>@entry.OldStatus</td>
+                    <td>@entry.NewStatus</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

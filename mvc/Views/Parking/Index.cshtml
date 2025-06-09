@@ -1,0 +1,97 @@
+﻿@{
+    ViewData["Title"] = "Parking";
+}
+@model List<Parking_projekt.Models.ParkingLot>
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <strong>Chyba!</strong> @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <strong>Úspěch!</strong> @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<script>
+    // Inicializace funkce pro zavírání alertů
+    document.addEventListener('DOMContentLoaded', function () {
+        var closeButtons = document.querySelectorAll('.alert .btn-close');
+        closeButtons.forEach(function (button) {
+            button.addEventListener('click', function () {
+                var alert = this.closest('.alert');
+                alert.classList.remove('show');
+                setTimeout(function () {
+                    alert.style.display = 'none';
+                }, 150);
+            });
+        });
+    });
+</script>
+
+<div class="text-center">
+    <div id="map" style="height: 400px; margin-bottom: 30px;"></div>
+</div>
+<script>
+    var map = L.map('map').setView([49.8341084, 18.1628143], 15);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
+    }).addTo(map);
+    var parkingLots = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+    parkingLots.forEach(function (lot) {
+        L.marker([lot.Latitude, lot.Longitude])
+            .addTo(map)
+            .bindPopup("<b>" + lot.Name + "</b>");
+    });
+</script>
+<hr />
+<div class="container">
+    <h2>Seznam parkovišť</h2>
+    <div class="row">
+        @foreach (var lot in Model)
+        {
+            <div class="col-md-4">
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">@lot.Name</h5>
+                        <p class="card-text">
+                            Souřadnice: (@lot.Latitude, @lot.Longitude)<br />
+                            Celkový počet míst: @lot.ParkingSpots?.Count(s => true) <br />
+                            Dostupná místa: @(lot.ParkingSpots?.Count(s => s.Status == ParkingSpotStatus.Available) ?? 0)<br />
+                            Obsazená místa: @(lot.ParkingSpots?.Count(s => s.Status == ParkingSpotStatus.Occupied) ?? 0)<br />
+                            Místa v údržbě: @(lot.ParkingSpots?.Count(s => s.Status == ParkingSpotStatus.Maintenance) ?? 0) <br />
+                            <div class="d-flex gap-4 mt-2">
+                                <form method="get" asp-controller="Parking" asp-action="Occupy">
+                                    <input type="hidden" name="parkingLotId" value="@lot.Id" />
+                                    <button type="submit" class="btn btn-success btn-sm">Obsadit parkovací místo</button>
+                                </form>
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <form method="get" asp-controller="Parking" asp-action="SpotDetail">
+                                        <input type="hidden" name="parkingLotId" value="@lot.Id" />
+                                        <a asp-controller="Parking" asp-action="SpotDetail" asp-route-parkingLotId="@lot.Id" class="btn btn-warning btn-sm">
+                                            Zobrazit detail parkoviště
+                                        </a>
+                                    </form>
+                                }
+                            </div>
+                            <div class="d-flex gap-4 mt-2">
+                                <form method="get" asp-controller="Parking" asp-action="MyOccupations">
+                                    <button type="submit" class="btn btn-primary btn-sm">Ukončit obsazení</button>
+                                </form>
+                            </div>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

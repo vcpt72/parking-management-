@@ -1,0 +1,24 @@
+﻿@model Parking_projekt.Models.ParkingOccupation
+@{
+    ViewData["Title"] = "Obsadit parkovací místo";
+}
+<h2>Obsadit parkovací místo</h2>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+<form asp-action="OccupyParkingSpot" method="post">
+    <input type="hidden" name="parkingLotId" value="@ViewBag.ParkingLotId" />
+
+    <div class="mb-3">
+        <label class="form-label" for="LicensePlate">Zadejte prosím svou SPZ ve formátu XXX XXXX</label>
+        <input asp-for="LicensePlate" class="form-control" />
+        <span asp-validation-for="LicensePlate" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-success">Potvrdit obsazení</button>
+</form>

@@ -1,0 +1,51 @@
+﻿@model IEnumerable<Parking_projekt.Models.ParkingOccupation>
+
+@{
+    ViewData["Title"] = "Moje obsazení parkovacích míst";
+}
+
+<h2>Moje obsazení</h2>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+@if (!Model.Any())
+{
+    <p>Nemáte žádné aktivní obsazení parkovacích míst.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Parkovací místo</th>
+                <th>SPZ</th>
+                <th>Začátek</th>
+                <th>Ukončit obsazení</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var occupation in Model)
+            {
+                <tr>
+                    <td>@occupation.ParkingSpotId</td>
+                    <td>@occupation.LicensePlate</td>
+                    <td>@occupation.StartTime.ToString("dd.MM.yyyy HH:mm")</td>
+                    <td>
+                        <form method="post" asp-action="EndOccupancy" asp-controller="Parking">
+                            <input type="hidden" name="parkingSpotId" value="@occupation.ParkingSpotId" />
+                            <button type="submit" class="btn btn-danger btn-sm">Ukončit obsazení</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
