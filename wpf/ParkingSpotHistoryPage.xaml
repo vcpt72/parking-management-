@@ -1,0 +1,16 @@
+﻿<Window x:Class="ParkingWPF.ParkingSpotHistoryPage"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Historie parkovacího místa" Height="450" Width="800">
+    <Grid Margin="10">
+        <TextBlock Text="Historie stavu parkovacího místa" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+
+        <DataGrid x:Name="HistoryGrid" AutoGenerateColumns="False" Height="300" CanUserAddRows="False">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Starý Stav" Binding="{Binding OldStatus}" Width="Auto"/>
+                <DataGridTextColumn Header="Nový Stav" Binding="{Binding NewStatus}" Width="Auto"/>
+                <DataGridTextColumn Header="Datum změny" Binding="{Binding ChangedAt}" Width="Auto"/>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</Window>
