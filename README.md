@@ -1,6 +1,6 @@
 # 🅿️ Parking Management System
 
-A desktop application for managing parking lots, including tracking parking spots, their statuses, and usage statistics.
+Desktop and web application for managing parking lots, including tracking parking spots, their statuses, and usage statistics.
 
 ## 📚 Technologies Used
 
